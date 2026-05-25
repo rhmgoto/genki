@@ -1,0 +1,17 @@
+{
+  "name": "元気",
+  "short_name": "元気",
+  "description": "自分用の元気スコア記録アプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fffaf1",
+  "theme_color": "#f8d66d",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

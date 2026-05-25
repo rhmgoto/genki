@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f8d66d">
+    <title>元気</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="today-label" id="todayLabel"></p>
+          <h1>元気</h1>
+        </div>
+        <div class="score-badge" id="latestScoreBadge">--</div>
+      </header>
+
+      <main>
+        <section class="tab-panel active" id="panel-record" aria-labelledby="tab-record">
+          <form id="recordForm" class="record-form">
+            <input type="hidden" id="editingId">
+
+            <section class="score-section">
+              <label for="score">元気スコア</label>
+              <div class="score-readout">
+                <span id="scoreValue">5</span>
+                <small>/ 10</small>
+              </div>
+              <input id="score" name="score" type="range" min="1" max="10" value="5" step="1">
+              <div class="score-steps" id="scoreSteps" aria-label="元気スコアのクイック選択"></div>
+            </section>
+
+            <section class="field-group">
+              <label for="memo">メモ</label>
+              <textarea id="memo" rows="4" placeholder="できごと、気分、体調など"></textarea>
+            </section>
+
+            <div class="vital-grid">
+              <section class="field-group">
+                <label for="systolic">収縮期血圧</label>
+                <input id="systolic" type="number" inputmode="numeric" min="40" max="260" placeholder="例 120">
+              </section>
+              <section class="field-group">
+                <label for="diastolic">拡張期血圧</label>
+                <input id="diastolic" type="number" inputmode="numeric" min="30" max="180" placeholder="例 80">
+              </section>
+              <section class="field-group">
+                <label for="pulse">脈拍</label>
+                <input id="pulse" type="number" inputmode="numeric" min="30" max="220" placeholder="例 70">
+              </section>
+            </div>
+
+            <section class="field-group optional-photo">
+              <label for="photoInput">写真</label>
+              <input id="photoInput" type="file" accept="image/*" capture="environment">
+              <img id="photoPreview" class="photo-preview hidden" alt="添付写真のプレビュー">
+              <button class="text-button hidden" id="removePhotoButton" type="button">写真を外す</button>
+            </section>
+
+            <div class="form-actions">
+              <button class="primary-button" type="submit" id="saveButton">保存</button>
+              <button class="secondary-button hidden" type="button" id="cancelEditButton">編集をやめる</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="tab-panel" id="panel-list" aria-labelledby="tab-list">
+          <div class="section-heading">
+            <h2>記録一覧</h2>
+            <button class="secondary-button compact" id="exportCsvButton" type="button">CSV出力</button>
+          </div>
+          <div class="record-list" id="recordList"></div>
+          <p class="empty-state hidden" id="emptyList">まだ記録がありません。</p>
+        </section>
+
+        <section class="tab-panel" id="panel-chart" aria-labelledby="tab-chart">
+          <div class="section-heading">
+            <h2>推移</h2>
+            <div class="segmented-control" aria-label="表示期間">
+              <button type="button" class="active" data-range="7">7日</button>
+              <button type="button" data-range="30">30日</button>
+              <button type="button" data-range="all">全期間</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="scoreChart" width="680" height="420" aria-label="元気スコアの折れ線グラフ"></canvas>
+          </div>
+          <div class="stats-grid" id="statsGrid"></div>
+        </section>
+      </main>
+
+      <nav class="tab-nav" aria-label="画面切り替え">
+        <button type="button" class="active" id="tab-record" data-tab="record">入力</button>
+        <button type="button" id="tab-list" data-tab="list">一覧</button>
+        <button type="button" id="tab-chart" data-tab="chart">分析</button>
+      </nav>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
