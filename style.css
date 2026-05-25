@@ -186,7 +186,8 @@ input[type="range"] {
 
 textarea,
 input[type="number"],
-input[type="file"] {
+input[type="file"],
+select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -195,7 +196,8 @@ input[type="file"] {
 }
 
 textarea,
-input[type="number"] {
+input[type="number"],
+select {
   padding: 13px 14px;
 }
 
@@ -269,9 +271,35 @@ input[type="file"] {
   margin-bottom: 12px;
 }
 
+.list-tools {
+  display: grid;
+  grid-template-columns: auto minmax(138px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-tools label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .record-list {
   display: grid;
   gap: 12px;
+}
+
+.month-summary {
+  margin: -4px 0 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.month-heading {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 900;
 }
 
 .record-card {
@@ -480,6 +508,14 @@ canvas {
   .section-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .list-tools {
+    grid-template-columns: auto 1fr;
+  }
+
+  .list-tools .compact {
+    grid-column: 1 / -1;
   }
 
   .stats-grid {

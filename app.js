@@ -9,6 +9,7 @@
   const state = {
     records: loadRecords(),
     chartRange: "7",
+    selectedMonth: "all",
     photoDataUrl: "",
   };
 
@@ -31,6 +32,8 @@
     cancelEditButton: document.getElementById("cancelEditButton"),
     recordList: document.getElementById("recordList"),
     emptyList: document.getElementById("emptyList"),
+    monthFilter: document.getElementById("monthFilter"),
+    monthSummary: document.getElementById("monthSummary"),
     exportCsvButton: document.getElementById("exportCsvButton"),
     scoreChart: document.getElementById("scoreChart"),
     statsGrid: document.getElementById("statsGrid"),
@@ -76,6 +79,10 @@
     els.recordForm.addEventListener("submit", saveRecord);
     els.cancelEditButton.addEventListener("click", resetForm);
     els.exportCsvButton.addEventListener("click", exportCsv);
+    els.monthFilter.addEventListener("change", function () {
+      state.selectedMonth = els.monthFilter.value;
+      renderList();
+    });
 
     els.photoInput.addEventListener("change", function () {
       const file = els.photoInput.files && els.photoInput.files[0];
@@ -208,11 +215,25 @@
   }
 
   function renderList() {
-    const records = getSortedRecords();
+    buildMonthFilter();
+
+    const records = getVisibleListRecords();
     els.recordList.innerHTML = "";
     els.emptyList.classList.toggle("hidden", records.length > 0);
+    els.emptyList.textContent = state.records.length === 0 ? "まだ記録がありません。" : "この月の記録はありません。";
+    els.monthSummary.textContent = getMonthSummary(records);
 
+    let currentMonth = "";
     records.forEach(function (record) {
+      const recordMonth = monthKey(new Date(record.createdAt));
+      if (state.selectedMonth === "all" && recordMonth !== currentMonth) {
+        currentMonth = recordMonth;
+        const heading = document.createElement("h3");
+        heading.className = "month-heading";
+        heading.textContent = monthLabel(recordMonth);
+        els.recordList.appendChild(heading);
+      }
+
       const card = document.createElement("article");
       card.className = "record-card";
 
@@ -379,7 +400,7 @@
 
   function exportCsv() {
     const header = ["日時", "元気スコア", "メモ", "収縮期血圧", "拡張期血圧", "脈拍"];
-    const rows = getSortedRecords().map(function (record) {
+    const rows = getVisibleListRecords().map(function (record) {
       return [
         formatDate(new Date(record.createdAt)),
         record.score,
@@ -398,7 +419,7 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "genki-records-" + new Date().toISOString().slice(0, 10) + ".csv";
+    link.download = "genki-records-" + exportDatePart() + ".csv";
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -446,6 +467,46 @@
     return state.records.slice().sort(function (a, b) {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
+  }
+
+  function getVisibleListRecords() {
+    return getSortedRecords().filter(function (record) {
+      return state.selectedMonth === "all" || monthKey(new Date(record.createdAt)) === state.selectedMonth;
+    });
+  }
+
+  function buildMonthFilter() {
+    const months = Array.from(new Set(getSortedRecords().map(function (record) {
+      return monthKey(new Date(record.createdAt));
+    })));
+
+    const availableValues = ["all"].concat(months);
+    if (!availableValues.includes(state.selectedMonth)) {
+      state.selectedMonth = "all";
+    }
+
+    els.monthFilter.innerHTML = '<option value="all">すべて</option>' + months.map(function (key) {
+      return '<option value="' + key + '">' + monthLabel(key) + "</option>";
+    }).join("");
+    els.monthFilter.value = state.selectedMonth;
+  }
+
+  function getMonthSummary(records) {
+    const label = state.selectedMonth === "all" ? "すべての月" : monthLabel(state.selectedMonth);
+    return label + " / " + records.length + "件";
+  }
+
+  function monthKey(date) {
+    return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+  }
+
+  function monthLabel(key) {
+    const parts = key.split("-");
+    return parts[0] + "年" + Number(parts[1]) + "月";
+  }
+
+  function exportDatePart() {
+    return state.selectedMonth === "all" ? new Date().toISOString().slice(0, 10) : state.selectedMonth;
   }
 
   function averageScore(records) {

@@ -70,8 +70,15 @@
         <section class="tab-panel" id="panel-list" aria-labelledby="tab-list">
           <div class="section-heading">
             <h2>記録一覧</h2>
-            <button class="secondary-button compact" id="exportCsvButton" type="button">CSV出力</button>
+            <div class="list-tools">
+              <label for="monthFilter">月</label>
+              <select id="monthFilter" aria-label="表示する月">
+                <option value="all">すべて</option>
+              </select>
+              <button class="secondary-button compact" id="exportCsvButton" type="button">CSV出力</button>
+            </div>
           </div>
+          <p class="month-summary" id="monthSummary"></p>
           <div class="record-list" id="recordList"></div>
           <p class="empty-state hidden" id="emptyList">まだ記録がありません。</p>
         </section>

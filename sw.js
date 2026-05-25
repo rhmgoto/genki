@@ -1,4 +1,4 @@
-const CACHE_NAME = "genki-v1";
+const CACHE_NAME = "genki-v2";
 const ASSETS = [
   "./",
   "./index.html",
