@@ -24,6 +24,7 @@
 
   const els = {
     todayLabel: document.getElementById("todayLabel"),
+    lastUpdatedLabel: document.getElementById("lastUpdatedLabel"),
     latestScoreBadge: document.getElementById("latestScoreBadge"),
     recordForm: document.getElementById("recordForm"),
     editingId: document.getElementById("editingId"),
@@ -246,9 +247,15 @@
   }
 
   function renderAll() {
+    renderLastUpdated();
     renderLatestBadge();
     renderList();
     renderChartAndStats();
+  }
+
+  function renderLastUpdated() {
+    const latest = getSortedRecords()[0];
+    els.lastUpdatedLabel.textContent = latest ? "最終更新: " + formatDate(new Date(latest.updatedAt || latest.createdAt)) : "最終更新: 未記録";
   }
 
   function renderLatestBadge() {
