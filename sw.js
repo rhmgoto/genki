@@ -1,4 +1,4 @@
-const CACHE_NAME = "genki-v5";
+const CACHE_NAME = "genki-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -18,8 +18,8 @@ self.addEventListener("install", function (event) {
 
 self.addEventListener("fetch", function (event) {
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      return cached || fetch(event.request);
+    fetch(event.request).catch(function () {
+      return caches.match(event.request);
     })
   );
 });
