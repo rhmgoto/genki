@@ -184,6 +184,40 @@ input[type="range"] {
   gap: 8px;
 }
 
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.label-row span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.action-button {
+  min-height: 50px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.action-button.active {
+  border-color: #55a078;
+  background: #dff5ea;
+  color: #236947;
+}
+
 textarea,
 input[type="number"],
 input[type="file"],
@@ -499,6 +533,10 @@ canvas {
 
   .score-steps button {
     min-height: 44px;
+  }
+
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .vital-grid {

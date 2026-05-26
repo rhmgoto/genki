@@ -3,6 +3,14 @@
 
   const STORAGE_KEY = "genki-records-v1";
   const MAX_PHOTO_WIDTH = 900;
+  const ACTION_OPTIONS = [
+    { id: "exercise", label: "運動" },
+    { id: "alcohol", label: "飲酒" },
+    { id: "outing", label: "外出" },
+    { id: "bath", label: "入浴" },
+    { id: "caffeine", label: "カフェイン" },
+    { id: "medicine", label: "薬/サプリ" },
+  ];
 
   // 画面全体で共有する小さな状態です。今後、睡眠・仕事負荷・ストレスなどを
   // 追加するときは、records の各要素に項目を足していく形にできます。
@@ -10,6 +18,7 @@
     records: loadRecords(),
     chartRange: "7",
     selectedMonth: "all",
+    selectedActions: [],
     photoDataUrl: "",
   };
 
@@ -21,6 +30,7 @@
     score: document.getElementById("score"),
     scoreValue: document.getElementById("scoreValue"),
     scoreSteps: document.getElementById("scoreSteps"),
+    actionButtons: document.getElementById("actionButtons"),
     memo: document.getElementById("memo"),
     systolic: document.getElementById("systolic"),
     diastolic: document.getElementById("diastolic"),
@@ -44,6 +54,7 @@
   function boot() {
     els.todayLabel.textContent = formatDate(new Date(), true);
     buildScoreButtons();
+    buildActionButtons();
     bindEvents();
     renderAll();
 
@@ -114,6 +125,32 @@
     updateScoreUi(Number(els.score.value));
   }
 
+  function buildActionButtons() {
+    ACTION_OPTIONS.forEach(function (action) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "action-button";
+      button.dataset.action = action.id;
+      button.textContent = action.label;
+      button.addEventListener("click", function () {
+        toggleAction(action.id);
+      });
+      els.actionButtons.appendChild(button);
+    });
+    updateActionUi();
+  }
+
+  function toggleAction(actionId) {
+    if (state.selectedActions.includes(actionId)) {
+      state.selectedActions = state.selectedActions.filter(function (id) {
+        return id !== actionId;
+      });
+    } else {
+      state.selectedActions.push(actionId);
+    }
+    updateActionUi();
+  }
+
   function setTab(name) {
     document.querySelectorAll(".tab-nav button").forEach(function (button) {
       button.classList.toggle("active", button.dataset.tab === name);
@@ -143,8 +180,10 @@
       pulse: toNumberOrEmpty(els.pulse.value),
       photoDataUrl: state.photoDataUrl || "",
       // 後から項目を増やしやすいよう、任意入力は extra に追加できます。
-      // 例: mood, sleepHours, workLoad, stressLevel, exercised, drankAlcohol
-      extra: existing && existing.extra ? existing.extra : {},
+      // 例: mood, sleepHours, workLoad, stressLevel
+      extra: Object.assign({}, existing && existing.extra ? existing.extra : {}, {
+        actions: state.selectedActions.slice(),
+      }),
     };
 
     if (editingId) {
@@ -173,9 +212,11 @@
     els.systolic.value = record.systolic || "";
     els.diastolic.value = record.diastolic || "";
     els.pulse.value = record.pulse || "";
+    state.selectedActions = normalizeActions(record.extra && record.extra.actions);
     state.photoDataUrl = record.photoDataUrl || "";
     showPhotoPreview(state.photoDataUrl);
     updateScoreUi(record.score);
+    updateActionUi();
     els.saveButton.textContent = "更新";
     els.cancelEditButton.classList.remove("hidden");
     setTab("record");
@@ -195,9 +236,11 @@
     els.recordForm.reset();
     els.editingId.value = "";
     els.score.value = "5";
+    state.selectedActions = [];
     state.photoDataUrl = "";
     showPhotoPreview("");
     updateScoreUi(5);
+    updateActionUi();
     els.saveButton.textContent = "保存";
     els.cancelEditButton.classList.add("hidden");
   }
@@ -242,6 +285,9 @@
         meta.push("血圧 " + (record.systolic || "--") + "/" + (record.diastolic || "--"));
       }
       if (record.pulse) meta.push("脈拍 " + record.pulse);
+      actionLabels(record).forEach(function (label) {
+        meta.push(label);
+      });
 
       // innerHTMLに入れる自由入力欄は escapeHtml を通して表示します。
       card.innerHTML = [
@@ -388,6 +434,12 @@
     });
   }
 
+  function updateActionUi() {
+    els.actionButtons.querySelectorAll(".action-button").forEach(function (button) {
+      button.classList.toggle("active", state.selectedActions.includes(button.dataset.action));
+    });
+  }
+
   function filterRecordsByRange(records, range) {
     if (range === "all") return records.slice();
     const days = Number(range);
@@ -399,12 +451,13 @@
   }
 
   function exportCsv() {
-    const header = ["日時", "元気スコア", "メモ", "収縮期血圧", "拡張期血圧", "脈拍"];
+    const header = ["日時", "元気スコア", "メモ", "行動", "収縮期血圧", "拡張期血圧", "脈拍"];
     const rows = getVisibleListRecords().map(function (record) {
       return [
         formatDate(new Date(record.createdAt)),
         record.score,
         record.memo || "",
+        actionLabels(record).join(" / "),
         record.systolic || "",
         record.diastolic || "",
         record.pulse || "",
@@ -515,6 +568,24 @@
       return sum + Number(record.score || 0);
     }, 0);
     return (total / records.length).toFixed(1);
+  }
+
+  function normalizeActions(actions) {
+    return Array.isArray(actions) ? actions.filter(function (id) {
+      return ACTION_OPTIONS.some(function (action) {
+        return action.id === id;
+      });
+    }) : [];
+  }
+
+  function actionLabels(record) {
+    const selected = normalizeActions(record.extra && record.extra.actions);
+    return selected.map(function (id) {
+      const action = ACTION_OPTIONS.find(function (item) {
+        return item.id === id;
+      });
+      return action ? action.label : id;
+    });
   }
 
   function scoreColor(score) {
