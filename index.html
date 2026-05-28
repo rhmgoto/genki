@@ -126,32 +126,11 @@
           </section>
 
           <section class="daily-card">
-            <h3>この日の元気スコアを記録</h3>
-            <div class="daily-score-row">
-              <strong id="dailyScoreValue">5</strong>
-              <input id="dailyScore" type="range" min="1" max="10" value="5" step="1">
-            </div>
-            <div class="score-steps" id="dailyScoreSteps" aria-label="デイリー元気スコアのクイック選択"></div>
-            <div class="vital-grid">
-              <section class="field-group">
-                <label for="dailySystolic">収縮期血圧</label>
-                <input id="dailySystolic" type="number" inputmode="numeric" min="40" max="260" placeholder="例 120">
-              </section>
-              <section class="field-group">
-                <label for="dailyDiastolic">拡張期血圧</label>
-                <input id="dailyDiastolic" type="number" inputmode="numeric" min="30" max="180" placeholder="例 80">
-              </section>
-              <section class="field-group">
-                <label for="dailyPulse">脈拍</label>
-                <input id="dailyPulse" type="number" inputmode="numeric" min="30" max="220" placeholder="例 70">
-              </section>
-            </div>
-            <section class="field-group">
-              <label for="dailyScoreMemo">スコアメモ</label>
-              <textarea id="dailyScoreMemo" rows="2" placeholder="この時点の状態など"></textarea>
-            </section>
-            <button class="primary-button" id="saveDailyScoreButton" type="button">この日のスコアを保存</button>
+            <h3>この日の元気スコア記録</h3>
+            <div class="daily-record-list" id="dailyRecordList"></div>
+            <p class="empty-state hidden" id="emptyDailyRecords">この日の元気スコア記録はまだありません。</p>
           </section>
+
         </section>
 
         <section class="tab-panel" id="panel-list" aria-labelledby="tab-list">
@@ -187,7 +166,7 @@
       </main>
 
       <nav class="tab-nav" aria-label="画面切り替え">
-        <button type="button" class="active" id="tab-record" data-tab="record">入力</button>
+        <button type="button" class="active" id="tab-record" data-tab="record">スコア</button>
         <button type="button" id="tab-calendar" data-tab="calendar">月間</button>
         <button type="button" id="tab-daily" data-tab="daily">デイリー</button>
         <button type="button" id="tab-list" data-tab="list">一覧</button>
@@ -195,6 +174,6 @@
       </nav>
     </div>
 
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=9"></script>
   </body>
 </html>

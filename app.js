@@ -68,14 +68,8 @@
     newHabitName: document.getElementById("newHabitName"),
     dailySleepHours: document.getElementById("dailySleepHours"),
     dailyNote: document.getElementById("dailyNote"),
-    dailyScore: document.getElementById("dailyScore"),
-    dailyScoreValue: document.getElementById("dailyScoreValue"),
-    dailyScoreSteps: document.getElementById("dailyScoreSteps"),
-    dailySystolic: document.getElementById("dailySystolic"),
-    dailyDiastolic: document.getElementById("dailyDiastolic"),
-    dailyPulse: document.getElementById("dailyPulse"),
-    dailyScoreMemo: document.getElementById("dailyScoreMemo"),
-    saveDailyScoreButton: document.getElementById("saveDailyScoreButton"),
+    dailyRecordList: document.getElementById("dailyRecordList"),
+    emptyDailyRecords: document.getElementById("emptyDailyRecords"),
     recordList: document.getElementById("recordList"),
     emptyList: document.getElementById("emptyList"),
     monthFilter: document.getElementById("monthFilter"),
@@ -92,10 +86,6 @@
     buildScoreButtons(els.scoreSteps, function (value) {
       els.score.value = String(value);
       updateScoreUi(value);
-    });
-    buildScoreButtons(els.dailyScoreSteps, function (value) {
-      els.dailyScore.value = String(value);
-      updateDailyScoreUi(value);
     });
     buildActionButtons();
     bindEvents();
@@ -127,9 +117,6 @@
     els.score.addEventListener("input", function () {
       updateScoreUi(Number(els.score.value));
     });
-    els.dailyScore.addEventListener("input", function () {
-      updateDailyScoreUi(Number(els.dailyScore.value));
-    });
 
     els.recordForm.addEventListener("submit", saveRecord);
     els.cancelEditButton.addEventListener("click", resetForm);
@@ -160,7 +147,6 @@
     els.addHabitForm.addEventListener("submit", addHabit);
     els.dailySleepHours.addEventListener("change", saveDailyFields);
     els.dailyNote.addEventListener("input", saveDailyFields);
-    els.saveDailyScoreButton.addEventListener("click", saveDailyScoreRecord);
 
     els.photoInput.addEventListener("change", function () {
       const file = els.photoInput.files && els.photoInput.files[0];
@@ -190,7 +176,6 @@
       container.appendChild(button);
     }
     updateScoreUi(Number(els.score.value));
-    updateDailyScoreUi(Number(els.dailyScore.value));
   }
 
   function buildActionButtons() {
@@ -267,44 +252,6 @@
     setTab("list");
   }
 
-  function saveDailyScoreRecord() {
-    saveDailyFields();
-    const daily = getDailyEntry(state.selectedDate);
-    const selectedDate = parseDateKey(state.selectedDate);
-    const now = new Date();
-    const createdAt = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds()
-    );
-    const record = {
-      id: crypto.randomUUID(),
-      createdAt: createdAt.toISOString(),
-      updatedAt: new Date().toISOString(),
-      score: Number(els.dailyScore.value),
-      memo: els.dailyScoreMemo.value.trim() || daily.note || "",
-      systolic: toNumberOrEmpty(els.dailySystolic.value),
-      diastolic: toNumberOrEmpty(els.dailyDiastolic.value),
-      pulse: toNumberOrEmpty(els.dailyPulse.value),
-      photoDataUrl: "",
-      extra: {
-        dailyDate: state.selectedDate,
-        sleepHours: daily.sleepHours || "",
-        habits: Object.assign({}, daily.habits),
-      },
-    };
-    state.records.push(record);
-    saveRecords();
-    els.dailyScoreMemo.value = "";
-    els.dailySystolic.value = "";
-    els.dailyDiastolic.value = "";
-    els.dailyPulse.value = "";
-    renderAll();
-    window.alert("この日の元気スコアを保存しました。");
-  }
 
   function editRecord(id) {
     const record = state.records.find(function (item) {
@@ -412,6 +359,7 @@
     els.dailyTitle.textContent = formatDateOnly(parseDateKey(state.selectedDate));
     renderHabitList();
     loadDailyFields();
+    renderDailyRecords();
   }
 
   function renderHabitList() {
@@ -463,8 +411,6 @@
     const daily = getDailyEntry(state.selectedDate);
     els.dailySleepHours.value = daily.sleepHours || "";
     els.dailyNote.value = daily.note || "";
-    els.dailyScore.value = "5";
-    updateDailyScoreUi(5);
   }
 
   function saveDailyFields() {
@@ -474,6 +420,36 @@
     state.daily[state.selectedDate] = daily;
     saveDaily();
     renderCalendar();
+  }
+
+  function renderDailyRecords() {
+    const records = recordsForDate(state.selectedDate).sort(function (a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    els.dailyRecordList.innerHTML = "";
+    els.emptyDailyRecords.classList.toggle("hidden", records.length > 0);
+
+    records.forEach(function (record) {
+      const item = document.createElement("article");
+      item.className = "daily-record-item";
+      const meta = [];
+      if (record.systolic || record.diastolic) meta.push("血圧 " + (record.systolic || "--") + "/" + (record.diastolic || "--"));
+      if (record.pulse) meta.push("脈拍 " + record.pulse);
+      actionLabels(record).forEach(function (label) {
+        meta.push(label);
+      });
+      item.innerHTML = [
+        '<div class="daily-record-score" style="background:' + scoreColor(record.score) + '">' + record.score + "</div>",
+        "<div>",
+        '  <div class="daily-record-time">' + escapeHtml(formatTime(new Date(record.createdAt))) + "</div>",
+        "  <p>" + escapeHtml(record.memo || "メモなし") + "</p>",
+        meta.length ? '  <div class="record-meta">' + meta.map(function (text) {
+          return '<span class="meta-chip">' + escapeHtml(text) + "</span>";
+        }).join("") + "</div>" : "",
+        "</div>",
+      ].join("");
+      els.dailyRecordList.appendChild(item);
+    });
   }
 
   function renderList() {
@@ -627,13 +603,6 @@
     els.scoreValue.textContent = String(value);
     document.documentElement.style.setProperty("--accent", scoreColor(value));
     els.scoreSteps.querySelectorAll("button").forEach(function (button) {
-      button.classList.toggle("active", Number(button.textContent) === value);
-    });
-  }
-
-  function updateDailyScoreUi(value) {
-    els.dailyScoreValue.textContent = String(value);
-    els.dailyScoreSteps.querySelectorAll("button").forEach(function (button) {
       button.classList.toggle("active", Number(button.textContent) === value);
     });
   }
@@ -886,6 +855,10 @@
 
   function formatShortDate(date) {
     return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric" }).format(date);
+  }
+
+  function formatTime(date) {
+    return new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit" }).format(date);
   }
 
   function exportDatePart() {
