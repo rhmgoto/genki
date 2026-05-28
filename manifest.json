@@ -1,6 +1,6 @@
 {
-  "name": "元気スコア",
-  "short_name": "元気スコア",
+  "name": "GENKI",
+  "short_name": "GENKI",
   "description": "元気スコア、習慣、睡眠、血圧を記録する自分用アプリ",
   "start_url": "./index.html",
   "display": "standalone",

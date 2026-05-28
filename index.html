@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f8d66d">
-    <title>元気スコア</title>
-    <link rel="manifest" href="manifest.json?v=7">
-    <link rel="stylesheet" href="style.css?v=7">
+    <title>GENKI</title>
+    <link rel="manifest" href="manifest.json?v=10">
+    <link rel="stylesheet" href="style.css?v=10">
   </head>
   <body>
     <div class="app-shell">
@@ -14,7 +14,7 @@
         <div>
           <p class="today-label" id="todayLabel"></p>
           <div class="title-row">
-            <h1>元気スコア</h1>
+            <h1>GENKI</h1>
             <span id="lastUpdatedLabel">最終更新: 未記録</span>
           </div>
         </div>
@@ -25,6 +25,11 @@
         <section class="tab-panel active" id="panel-record" aria-labelledby="tab-record">
           <form id="recordForm" class="record-form">
             <input type="hidden" id="editingId">
+
+            <div class="form-actions top-actions">
+              <button class="primary-button" type="submit" id="saveButton">保存</button>
+              <button class="secondary-button hidden" type="button" id="cancelEditButton">編集をやめる</button>
+            </div>
 
             <section class="score-section">
               <label for="score">元気スコア</label>
@@ -71,10 +76,6 @@
               <button class="text-button hidden" id="removePhotoButton" type="button">写真を外す</button>
             </section>
 
-            <div class="form-actions">
-              <button class="primary-button" type="submit" id="saveButton">保存</button>
-              <button class="secondary-button hidden" type="button" id="cancelEditButton">編集をやめる</button>
-            </div>
           </form>
         </section>
 
@@ -174,6 +175,6 @@
       </nav>
     </div>
 
-    <script src="app.js?v=9"></script>
+    <script src="app.js?v=10"></script>
   </body>
 </html>

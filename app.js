@@ -10,10 +10,8 @@
   const ACTION_OPTIONS = [
     { id: "exercise", label: "運動" },
     { id: "alcohol", label: "飲酒" },
-    { id: "outing", label: "外出" },
-    { id: "bath", label: "入浴" },
-    { id: "caffeine", label: "カフェイン" },
-    { id: "medicine", label: "薬/サプリ" },
+    { id: "trouble", label: "トラブル発生" },
+    { id: "veryBusy", label: "超多忙" },
   ];
 
   const DEFAULT_HABITS = [
