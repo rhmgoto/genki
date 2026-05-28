@@ -1,7 +1,7 @@
 {
   "name": "元気スコア",
   "short_name": "元気スコア",
-  "description": "自分用の元気スコア記録アプリ",
+  "description": "元気スコア、習慣、睡眠、血圧を記録する自分用アプリ",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#fffaf1",

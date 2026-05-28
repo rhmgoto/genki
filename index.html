@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f8d66d">
     <title>元気スコア</title>
-    <link rel="manifest" href="manifest.json?v=6">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="manifest" href="manifest.json?v=7">
+    <link rel="stylesheet" href="style.css?v=7">
   </head>
   <body>
     <div class="app-shell">
@@ -78,6 +78,82 @@
           </form>
         </section>
 
+        <section class="tab-panel" id="panel-calendar" aria-labelledby="tab-calendar">
+          <div class="section-heading">
+            <h2 id="calendarTitle">令和8年5月</h2>
+            <div class="calendar-tools">
+              <button class="secondary-button compact" id="prevMonthButton" type="button">前月</button>
+              <button class="secondary-button compact" id="todayMonthButton" type="button">今月</button>
+              <button class="secondary-button compact" id="nextMonthButton" type="button">翌月</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <section class="tab-panel" id="panel-daily" aria-labelledby="tab-daily">
+          <div class="section-heading">
+            <h2 id="dailyTitle">デイリー</h2>
+            <div class="calendar-tools">
+              <button class="secondary-button compact" id="prevDayButton" type="button">前日</button>
+              <button class="secondary-button compact" id="nextDayButton" type="button">翌日</button>
+            </div>
+          </div>
+
+          <section class="daily-card">
+            <h3>習慣チェック</h3>
+            <div class="habit-list" id="habitList"></div>
+            <form class="add-habit-form" id="addHabitForm">
+              <input id="newHabitName" type="text" placeholder="習慣を追加">
+              <button class="secondary-button compact" type="submit">追加</button>
+            </form>
+          </section>
+
+          <section class="daily-card">
+            <h3>一日の記録</h3>
+            <div class="daily-fields">
+              <section class="field-group">
+                <label for="dailySleepHours">前日の睡眠時間</label>
+                <input id="dailySleepHours" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="例 7.5">
+              </section>
+              <section class="field-group">
+                <label for="dailyNote">一日のメモ</label>
+                <textarea id="dailyNote" rows="3" placeholder="今日を通した気づき、体調、出来事など"></textarea>
+              </section>
+            </div>
+          </section>
+
+          <section class="daily-card">
+            <h3>この日の元気スコアを記録</h3>
+            <div class="daily-score-row">
+              <strong id="dailyScoreValue">5</strong>
+              <input id="dailyScore" type="range" min="1" max="10" value="5" step="1">
+            </div>
+            <div class="score-steps" id="dailyScoreSteps" aria-label="デイリー元気スコアのクイック選択"></div>
+            <div class="vital-grid">
+              <section class="field-group">
+                <label for="dailySystolic">収縮期血圧</label>
+                <input id="dailySystolic" type="number" inputmode="numeric" min="40" max="260" placeholder="例 120">
+              </section>
+              <section class="field-group">
+                <label for="dailyDiastolic">拡張期血圧</label>
+                <input id="dailyDiastolic" type="number" inputmode="numeric" min="30" max="180" placeholder="例 80">
+              </section>
+              <section class="field-group">
+                <label for="dailyPulse">脈拍</label>
+                <input id="dailyPulse" type="number" inputmode="numeric" min="30" max="220" placeholder="例 70">
+              </section>
+            </div>
+            <section class="field-group">
+              <label for="dailyScoreMemo">スコアメモ</label>
+              <textarea id="dailyScoreMemo" rows="2" placeholder="この時点の状態など"></textarea>
+            </section>
+            <button class="primary-button" id="saveDailyScoreButton" type="button">この日のスコアを保存</button>
+          </section>
+        </section>
+
         <section class="tab-panel" id="panel-list" aria-labelledby="tab-list">
           <div class="section-heading">
             <h2>記録一覧</h2>
@@ -112,11 +188,13 @@
 
       <nav class="tab-nav" aria-label="画面切り替え">
         <button type="button" class="active" id="tab-record" data-tab="record">入力</button>
+        <button type="button" id="tab-calendar" data-tab="calendar">月間</button>
+        <button type="button" id="tab-daily" data-tab="daily">デイリー</button>
         <button type="button" id="tab-list" data-tab="list">一覧</button>
         <button type="button" id="tab-chart" data-tab="chart">分析</button>
       </nav>
     </div>
 
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=7"></script>
   </body>
 </html>
